@@ -1,3 +1,7 @@
+console.log("Starting server...");
+console.log("MONGODB_URL:", process.env.MONGODB_URL ? "✅" : "❌");
+console.log("PORT:", process.env.PORT);
+
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
