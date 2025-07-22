@@ -1,7 +1,3 @@
-console.log("Starting server...");
-console.log("MONGODB_URL:", process.env.MONGODB_URL ? "✅" : "❌");
-console.log("PORT:", process.env.PORT);
-
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
@@ -24,6 +20,7 @@ import userRoutes from "./routes/user.js";
 import chatRoutes from "./routes/chat.js";
 import profileRoutes from "./routes/profile.js";
 import authCheckRoutes from "./middleware/authRoutes.js";
+import orderRoutes from "./routes/order.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -72,6 +69,8 @@ app.use("/api/user", userRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/auth", authCheckRoutes);
+app.use("/api/order", orderRoutes);
+
 
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
