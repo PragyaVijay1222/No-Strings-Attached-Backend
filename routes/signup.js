@@ -13,7 +13,7 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 
-router.post("/signup", async (req, res) => {
+router.post("/signup", limiter, async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
@@ -34,12 +34,11 @@ router.post("/signup", async (req, res) => {
       expiresIn: "1d"
     });
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      sameSite: "Lax",
-      secure: false, 
-    });
-
+res.cookie("token", token, {
+  httpOnly: true,
+  sameSite: "Lax",
+  secure: process.env.NODE_ENV === "production",
+});
     return res.status(201).json({ message: "User created", userId: newUser._id });
 
   } catch (err) {

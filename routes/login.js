@@ -5,6 +5,7 @@ import { User } from "../model/UserProfileSchema.js";
 import { rateLimit } from "express-rate-limit";
 
 const router = express.Router();
+const isProduction = process.env.NODE_ENV === "production";
 
 const limiter = rateLimit({
   windowMs: 5 * 1000,
@@ -13,30 +14,37 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 
-router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-  const existingUser = await User.findOne({ email });
+router.post("/login", limiter, async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const existingUser = await User.findOne({ email });
 
-  if (!existingUser) {
-    return res.status(400).json({ message: "User not found" });
+    if (!existingUser) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
+    const isPasswordValid = bcrypt.compareSync(password, existingUser.password);
+    if (!isPasswordValid) {
+      return res.status(400).json({ message: "Incorrect password" });
+    }
+
+    const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET_KEY, {
+      expiresIn: "1d",
+    });
+
+    const isProduction = process.env.NODE_ENV === "production";
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "None" : "Lax",
+      maxAge: 24 * 60 * 60 * 1000
+    });
+
+    return res.status(200).json({ message: "Login successful", userId: existingUser._id });
+  } catch (err) {
+    console.error("Login error:", err.message);
+    res.status(500).json({ message: "Internal server error" });
   }
-
-  const isPasswordValid = bcrypt.compareSync(password, existingUser.password);
-  if (!isPasswordValid) {
-    return res.status(400).json({ message: "Incorrect password" });
-  }
-
-  const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET_KEY, {
-    expiresIn: "1d",
-  });
-
-  res.cookie("token", token, {
-    httpOnly: true,
-    sameSite: "Lax", 
-    secure: false,
-  });
-
-  return res.status(200).json({ message: "Login successful", userId: existingUser._id });
 });
 
 router.get("/auth-check", (req, res) => {
