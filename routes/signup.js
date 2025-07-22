@@ -15,7 +15,7 @@ const limiter = rateLimit({
 
 router.post("/signup", limiter, async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, add, number, password } = req.body;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -27,6 +27,8 @@ router.post("/signup", limiter, async (req, res) => {
     const newUser = await User.create({
       name,
       email,
+      add,
+      number,
       password: hashedPassword
     });
 

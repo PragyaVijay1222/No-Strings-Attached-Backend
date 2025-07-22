@@ -36,6 +36,14 @@ const userSchema = mongoose.Schema({
     listed: {
         type: [String],
         default: []
+    },
+    add: {
+        type: String,
+        required: true
+    },
+    number: {
+        type: String,
+        required: true
     }
 }, { timestamps: true });
 
