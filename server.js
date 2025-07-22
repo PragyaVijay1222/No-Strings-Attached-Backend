@@ -25,7 +25,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", 
+    origin: ["http://localhost:5173", "https://no-strings-attached-frontend.vercel.app"],
     methods: ["GET", "POST"]
   }
 });
@@ -33,7 +33,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, ".env") });
 
-app.use(cors({ origin: "http://localhost:5173", credentials: true, exposedHeaders: ['set-cookie'] }));
+app.use(cors({ origin: ["http://localhost:5173", "https://no-strings-attached-frontend.vercel.app"], credentials: true, exposedHeaders: ['set-cookie'] }));
 app.use(express.json());
 app.use(cookieParser());
 
