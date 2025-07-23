@@ -135,7 +135,6 @@ Uses Gmail SMTP via Nodemailer to send emails on order placement and (future) st
 
 - 💸 **Razorpay UPI integration** for real payments
 - 🧾 PDF invoices and downloadable receipts
-- 📧 Automated email confirmation with item details
 - ❌ Account deletion and GDPR compliance
 - 📊 Admin dashboard and analytics
 - 🔁 Order status tracking (shipped, delivered, etc.)
