@@ -1,12 +1,17 @@
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.join(__dirname, ".env") });
+
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
 import mongoose from "mongoose";
 import cors from "cors";
-import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
-import path from "path";
-import { fileURLToPath } from "url";
 import { Message } from "./model/Message.js";
 
 
@@ -30,9 +35,6 @@ const io = new Server(server, {
     methods: ["GET", "POST"]
   }
 });
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-dotenv.config({ path: path.join(__dirname, ".env") });
 
 app.use((req, res, next) => {
   const allowedOrigins = [
@@ -70,7 +72,6 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/auth", authCheckRoutes);
 app.use("/api/order", orderRoutes);
-
 
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);

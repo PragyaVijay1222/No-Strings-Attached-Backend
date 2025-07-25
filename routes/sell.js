@@ -2,9 +2,11 @@ import express from 'express';
 import { Product } from "../model/ProductDetailsSchema.js";
 import { authenticateUser } from "../middleware/auth.js";
 import { User } from "../model/UserProfileSchema.js"
+import { upload } from "../utils/cloudinary.js";
+
 const router = express.Router();
 
-router.post("/sell",authenticateUser, async (req, res) => {
+router.post("/sell", authenticateUser, upload.single("image"), async (req, res) => {
   try {
     const {
       name,
@@ -16,15 +18,16 @@ router.post("/sell",authenticateUser, async (req, res) => {
       type,
       size,
       email,
-      image,
-      upi
+      upi,
     } = req.body;
 
-    const sellerId = req.user?._id; 
+    const sellerId = req.user?._id;
 
     if (!sellerId) {
       return res.status(401).json({ message: "Unauthorized: sellerId missing" });
     }
+
+    const image = req.file?.path;
 
     const newProduct = await Product.create({
       name,
@@ -38,7 +41,7 @@ router.post("/sell",authenticateUser, async (req, res) => {
       email,
       image,
       upi,
-      sellerId 
+      sellerId,
     });
 
     await User.findByIdAndUpdate(
